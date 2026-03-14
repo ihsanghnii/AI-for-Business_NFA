@@ -1,0 +1,159 @@
+{
+  "name": "Chatbot Katalog Menu",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! 👋 \nSelamat datang di Ranmei's Cake & Snack 🍰✨ \nMulai dari gorengan gurih, kue tradisional, bolu legit, sampai minuman segar ada di sini loh. Ada camilan yang lagi kamu cari hari ini?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e6f85dc2-8fe7-4c29-8187-217f122a78a2",
+      "name": "When chat message received",
+      "webhookId": "71cb9342-5bd4-4afc-aef7-138b91df84cb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "#Peran dan Tugas\nKamu adalah asisten virtual yang ramah dari toko SN Cake&Cookies. Tugas utama kamu adalah membantu menjawab pertanyaan pelanggan mengenai daftar menu makanan, deskripsi produk, dan harga kue.\n\n#Sumber Informasi\nKamu harus mencari informasi produk dan harga tersebut menggunakan Tool Google Sheets yang sudah disediakan.\n\n#Rules\n1. Gunakan bahasa Indonesia yang santai, sopan, dan hangat. Kamu boleh menggunakan emoji secukupnya.\n\n2. Selalu pastikan jawabanmu sesuai dengan informasi yang diambil dari Tool Google Sheets.\n\n3. Jika pelanggan mencari menu atau harga yang tidak ada di dalam data tersebut, kamu dilarang keras mengarang daftar menu baru.\n\n4. Jika produk tidak tersedia, jawab dengan jujur dan tawarkan menu lain, misalnya: \"Maaf Kak, untuk menu tersebut saat ini belum tersedia di SN Cake&Cookies. Mau coba lihat menu kami yang lain?\"\n\n5. Ubah angka harga menjadi format Rupiah yang rapi saat menjawab pelanggan, misalnya menjadi Rp15.000."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        280,
+        0
+      ],
+      "id": "939f5f0f-08b8-43da-96cf-5c4a90352687",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "aeec3264-2998-4942-bfbd-d2a5e5732f76",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "72IdGPKfK5Un5BKJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "49fc665c-778b-44e5-a89a-98610b34670a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1W220CexdO9x3_i0Q7KJdddNjXz7mzXWDI4y0lrF3rk4",
+          "mode": "list",
+          "cachedResultName": "List Harga Produk",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1W220CexdO9x3_i0Q7KJdddNjXz7mzXWDI4y0lrF3rk4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1620261212,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1W220CexdO9x3_i0Q7KJdddNjXz7mzXWDI4y0lrF3rk4/edit#gid=1620261212"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        224
+      ],
+      "id": "69ad5d0e-2cac-47de-bbfe-425f8baea446",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Y1EkDMVrVwlAIstv",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0322199c-8a5d-49f6-a3da-7afc0294753f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb0ff54fafbc324f661b6d31bc2cbeffcfda94763dff610d1efdeb71ff1dddad"
+  },
+  "id": "kNM4gbJHm1VmSiMe",
+  "tags": []
+}
