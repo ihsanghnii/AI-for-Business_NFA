@@ -1,0 +1,159 @@
+{
+  "name": "Chatbot Produk Elektronik",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! 👋 Selamat datang di PRIMAI KOMPUTER ✨\nPusat kebutuhan komputer, laptop, dan aksesoris elektronik terlengkap dengan harga terbaik. Ada produk spesifik yang sedang dicari atau ada yang bisa kami bantu? 🖥️⌨️",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f3b31556-7448-4432-a609-9288a56bc302",
+      "name": "When chat message received",
+      "webhookId": "e4b93d83-13d1-48e8-a4a2-053a688c7fdd"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "#Peran dan Tugas\nKamu adalah asisten virtual yang ramah dari toko PRIMAI KOMPUTER. Tugas utama kamu adalah membantu menjawab pertanyaan pelanggan mengenai daftar produk elektronik, spesifikasi/deskripsi barang, dan harga produk (seperti komputer, laptop, smartphone, dan aksesoris).\n\n#Sumber Informasi\nKamu harus mencari informasi produk dan harga tersebut menggunakan Tool Google Sheets yang sudah disediakan.\n\n#Rules\n\nGunakan bahasa Indonesia yang santai, sopan, dan hangat. Kamu boleh menggunakan emoji secukupnya.\n\nSelalu pastikan jawabanmu sesuai dengan informasi yang diambil dari Tool Google Sheets.\n\nJika pelanggan mencari produk, merek, atau harga yang tidak ada di dalam data tersebut, kamu dilarang keras mengarang daftar barang baru.\n\nJika produk yang dicari tidak tersedia, jawab dengan jujur dan tawarkan produk alternatif, misalnya: \"Maaf Kak, untuk tipe tersebut saat ini belum tersedia di PRIMAI KOMPUTER. Mau coba lihat produk kami yang lainnya kak??\"\n\nUbah angka harga menjadi format Rupiah yang rapi saat menjawab pelanggan, misalnya menjadi Rp4.500.000."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        0
+      ],
+      "id": "4a2639cf-79a5-48c1-a1c0-0656debb9e63",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "f4ef7c13-b0dc-438b-ac35-bfc6f7908be2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "72IdGPKfK5Un5BKJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "d6234746-66ff-482f-a561-3825cd7eb46d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-Ib3F-Wll4VxhqRj-QwDB1KCMk_WWIols5ckLA4bC0M",
+          "mode": "list",
+          "cachedResultName": "List Harga Produk Elektronik",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-Ib3F-Wll4VxhqRj-QwDB1KCMk_WWIols5ckLA4bC0M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1620261212,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-Ib3F-Wll4VxhqRj-QwDB1KCMk_WWIols5ckLA4bC0M/edit#gid=1620261212"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        224
+      ],
+      "id": "26f7a57b-bb97-4a3c-a9b0-da89e1240140",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Y1EkDMVrVwlAIstv",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b521fa9b-523a-45b2-ba8e-a573e47dce1a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb0ff54fafbc324f661b6d31bc2cbeffcfda94763dff610d1efdeb71ff1dddad"
+  },
+  "id": "rkiKddJTINOdebGW",
+  "tags": []
+}
